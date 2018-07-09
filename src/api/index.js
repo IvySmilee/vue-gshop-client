@@ -13,7 +13,7 @@ import ajax from './ajax'
 export const reqAddress=geohash=>ajax(`/api/position/${geohash}`);
 
 // [2、获取食品分类列表](#2获取食品分类列表)<br/>
-export const reqFoodsTypes=()=>ajax(`/api/index_category`);
+export const reqFoodTypes=()=>ajax(`/api/index_category`);
 // [3、根据经纬度获取商铺列表](#3根据经纬度获取商铺列表)<br/>
 ///shops?latitude=40.10038&longitude=116.36867]
 export const reqShops=({latitude,longitude})=>ajax(`/api/shops`,{latitude,longitude});
@@ -43,7 +43,7 @@ export const reqPhoneLogin=({phone,code})=>ajax(`/api/login_sms`,{phone,code},'P
 
 // [9、根据会话获取用户信息](#9根据会话获取用户信息)<br/>
 //	http://localhost:3000/userinfo
-export const reqUserInfo=()=>ajax(`/api/userinfo`);
+export const reqUser=()=>ajax(`/api/userinfo`);
 
 // [10、用户登出](#10用户登出)<br/>
 //	http://localhost:3000/logout

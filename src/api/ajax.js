@@ -17,11 +17,12 @@ export default function ajax(url='',data={},type='GET'){
         paramStr+=key+'='+data[key]+'&'
       });
       if (paramStr!==''){
-        paramStr=paramStr.substring(0,paramStr.length-1);
+        paramStr='?'+paramStr.substring(0,paramStr.length-1);
         url=url+"?"+paramStr;
       }
+
       //使用axios发送get请求
-      promise=axios.get(url + '?' + paramStr);
+      promise=axios.get(url + paramStr);
     }else{ //发送post请求
       //使用axios发送post请求
       promise=axios.post(url,data);
