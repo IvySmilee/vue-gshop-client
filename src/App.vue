@@ -1,28 +1,23 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld/>
+    <router-view/>
+    <!--v-show="$route.meta.isShow"：接收路由index.js中的配置-->
+    <FooterGuide v-show="$route.meta.isShow"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
-
+import FooterGuide from './components/FooterGuide/FooterGuide.vue'
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  components:{
+    FooterGuide
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style scoped lang="stylus" rel="stylesheet/stylus">
+  #app
+    width 100%
+    height 100%
+    background #f5f5f5
 </style>
