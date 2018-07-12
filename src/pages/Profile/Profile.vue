@@ -1,18 +1,18 @@
 <template>
   <section class="profile">
     <HeaderTop title="我的"/>
-    <section class="profile-number">
+    <section class="profile-number border-1px">
       <router-link to="/login" class="profile-link">
         <div class="profile_image">
           <i class="iconfont icon-person"></i>
         </div>
-        <div class="user-info">
-          <p class="user-info-top">登录/注册</p>
+        <div class="user-info"><!--优先显示name和phone，没有显示登录/注册-->
+          <p class="user-info-top">{{user.name ? user.name : user.phone ? user.phone : '登录/注册'}}</p>
           <p>
             <span class="user-icon">
               <i class="iconfont icon-shouji icon-mobile"></i>
-            </span>
-            <span class="icon-mobile-number">暂无绑定手机号</span>
+            </span><!--没有手机号，提示无绑定-->
+            <span class="icon-mobile-number">{{user.phone ? user.phone : '暂无绑定手机号'}}</span>
           </p>
         </div>
         <span class="arrow">
@@ -20,6 +20,7 @@
         </span>
       </router-link>
     </section>
+    
     <section class="profile_info_data border-1px">
       <ul class="info_data_list">
         <a href="javascript:" class="info_data_link">
@@ -88,20 +89,35 @@
         </div>
       </a>
     </section>
+    
+    <section class="profile_my_order border-1px">
+      <mt-button style="width:100%" type="danger" v-show="user._id"
+                 @click="logout">退出登录</mt-button>
+    </section>
   </section>
-
 </template>
 
 <script>
+  import {MessageBox} from 'mint-ui' //引入按钮弹出的信息框
+  import {mapState} from 'vuex'
   import HeaderTop from '../../components/HeaderTop/HeaderTop.vue'
-  
+  //引入Button按钮组件
+  import MtButton from "../../../node_modules/mint-ui/packages/button/src/button.vue";
+
   export default {
-    /*data：组件中data必须用函数的形式，返回的必须是对象*/
-    data() {
-      return {}
+    computed:{
+      ...mapState(['user'])
+    },
+    methods:{
+      logout(){
+        MessageBox.confirm('确定退出吗？').then(action=>{ //确认
+          this.$store.dispatch('logout')
+        },()=>{console.log('点击了取消')});
+      }
     },
     components:{
-      HeaderTop
+      HeaderTop,
+      MtButton
     }
   }
 </script>

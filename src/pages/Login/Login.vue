@@ -9,16 +9,16 @@
         </div>
       </div>
       <div class="login_content">
-        <form>
+        <form @submit.prevent="login">
           <div :class="{on:loginWay}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
-              <button class="get_verification" :class="{right_phone_number:isRightPhone}" @click="sendCode">
+              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone" >
+              <button class="get_verification" :class="{right_phone_number:isRightPhone}" @click.prevent="sendCode">
                 {{computeTime>0? `已发送(${computeTime}s)` : '获取验证码'}}
               </button>
             </section>
             <section class="login_verification">
-              <input type="tel" maxlength="8" placeholder="验证码">
+              <input type="tel" maxlength="8" placeholder="验证码" v-model="code">
             </section>
             <section class="login_hint">
               温馨提示：未注册硅谷外卖帐号的手机号，登录时将自动注册，且代表已同意
@@ -28,18 +28,19 @@
           <div :class="{on:!loginWay}">
             <section>
               <section class="login_message">
-                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
+                <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名" v-model="name">
               </section>
               <section class="login_verification">
-                <input :type="isHide? 'password' : 'text'" maxlength="8" placeholder="密码">
+                <input :type="isHide? 'password' : 'text'" maxlength="8" placeholder="密码" v-model="pwd">
                 <div class="switch_button" :class="isHide? 'off' : 'on'" @click="isHide=!isHide">
                   <div class="switch_circle" :class="{right:!isHide}"></div>
                   <span class="switch_text">{{isHide? '' : 'abc'}}</span>
                 </div>
               </section>
               <section class="login_message">
-                <input type="text" maxlength="11" placeholder="验证码">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <input type="text" maxlength="11" placeholder="验证码" v-model="captcha">
+                <img class="get_verification" src="http://localhost:3000/captcha" alt="captcha"
+                     @click="changeCaptcha" ref="captcha">
               </section>
             </section>
           </div>
@@ -51,19 +52,27 @@
         <i class="iconfont icon-jiantou2"></i>
       </span>
     </div>
+    <AlertTip v-show="isShowAlert" :alertText="alertText" @closeTip="closeTip"/>
   </div>
-
 </template>
 
 <script>
+  import AlertTip from '../../components/AlertTip/AlertTip.vue'
+  import {reqSendCode,reqPwdLogin,reqSmsLogin} from '../../api'
   export default {
     /*data：组件中data必须用函数的形式，返回的必须是对象*/
     data() {
       return {
         loginWay:true, //true:短信，false:密码登录
         phone:'',//手机号
+        code:'', //短信验证码
+        name:'', //用户名
+        pwd:'', //密码
+        captcha:'', //图形验证码
         computeTime:0, // 倒计时剩余的时间
-        isHide:true  //密码框默认不显示
+        isHide:true,  //是否显示密码
+        alertText:'', //警告的提示文本
+        isShowAlert:false, //是否显示警告框
       }
     },
     computed:{
@@ -72,20 +81,96 @@
       }
     },
     methods:{
-      sendCode (){
+      //发送验证码
+      async sendCode (){
         //如果是正确的手机号并且没有计时时，才开始倒计时
         if(this.isRightPhone && this.computeTime===0){
           this.computeTime=10;
           //启动循环定时器
           const intervalId=setInterval(()=>{
             this.computeTime--;
-            if(this.computeTime===0){
+            if(this.computeTime<=0){
               //清除定时器
               clearInterval(intervalId);
+              this.computeTime=0;
             }
-          },1000)
+          },1000);
+          //发送ajax请求发送验证码短信
+          const result=await reqSendCode(this.phone);
+          if(result.code===1){ //发送失败
+            this.showTip(result.msg);
+            //停止计时,清理定时器
+            this.computeTime=0;
+          }else{ //发送成功
+            console.log('发送验证码成功了~')
+          }
         }
+      },
+      //关闭警告框
+      closeTip (){
+        this.isShowAlert=false;
+        this.alertText='';
+      },
+      //显示提示
+      showTip (text){
+        this.isShowAlert=true;
+        this.alertText=text;
+      },
+      //请求登录
+      async login (){
+        let result;
+        //先进行前台表单验证
+        if(this.loginWay){//短信登录
+          const {phone,code,isRightPhone}=this;
+          if(!isRightPhone){
+            this.showTip('请输入正确的手机号');
+            return
+          } else if(!/^\d{6}/.test(code)){
+            this.showTip('请输入正确验证码');
+            return
+          }
+          //发送请求
+          result=await reqSmsLogin({phone,code})
+        }else{ //手机密码登录
+          const {name, pwd, captcha} = this;
+          if(!name) { // 用户名
+            this.showTip('请输入用户名');
+            return
+          } else if(!pwd) { // 密码
+            this.showTip('请输入密码');
+            return
+          } else if(!captcha) { // 图片验证码
+            this.showTip('请输入验证码');
+            return
+          }
+          //发请求
+          result=await reqPwdLogin({name,pwd,captcha});
+          
+          //如果密码登录失败，更新显示图形验证码
+          if(result.code===1){//更新验证码
+            this.changeCaptcha();
+          }
+        }
+        //根据结果数据进行处理
+        if(result.code===1){ //登录失败
+          this.showTip(result.msg);
+        }else{ //登录成功
+          const user=result.data;
+          //保存到vuex的state
+          this.$store.dispatch('saveUser',user);
+          //回到个人中心界面
+          this.$router.replace('/profile')
+        }
+        
+      },
+      //验证码的回调
+      changeCaptcha (){
+        //必须指定一个不同的src，添加时间戳来实现，端口号与后台一致
+        this.$refs.captcha.src='http://localhost:3000/captcha?time='+Date.now();
       }
+    },
+    components:{
+      AlertTip
     }
   }
 </script>

@@ -5,5 +5,8 @@ export default {
   // address初始值是空对象，.name是undefined，不会报错，address如果是null，就会报错！！！
   categorys: [], // 分类数组
   shops: [], //商家数组
-  userInfo:{}
+  user:{}, //用户信息对象
+  goods:[], //商品列表数组
+  ratings:[], //商家评价数组
+  info:{}, //商家信息
 }

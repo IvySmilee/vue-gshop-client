@@ -21,25 +21,25 @@ export const reqShops=({latitude,longitude})=>ajax(`/api/shops`,{latitude,longit
 // [4、根据经纬度和关键字搜索商铺列表](#4根据经纬度和关键字搜索商铺列表)<br/>.............
 //  http://localhost:3000/search_shops
 //   例子: http://localhost:3000/search_shops?keyword=test&geohash=40.10038,116.36867
-export const reqGShops=({keyword,geohash})=>ajax(`/api/search_shops`,{keyword,geohash});
+export const reqSearchShops=(keyword,geohash)=>ajax(`/api/search_shops`,{keyword,geohash});
 
 // [5、获取一次性验证码](#5获取一次性验证码)<br/>
 // http://localhost:3000/captcha
-export const reqCaptcha=()=>ajax(`/api/captcha`);
+export const reqCaptchas=()=>ajax(`/api/captcha`);
 
 // [6、用户名密码登陆](#6用户名密码登陆)<br/>..................................
 // http://localhost:3000/login_pwd, POST请求
 //name  pwd   captcha
-export const reqLogin=({name,pwd,captcha})=>ajax(`/api/login_pwd`,{name,pwd,captcha},'POST');
+export const reqPwdLogin=({name,pwd,captcha})=>ajax(`/api/login_pwd`,{name,pwd,captcha},'POST');
 
 // [7、发送短信验证码](#7发送短信验证码)<br/>
 //	http://localhost:3000/sendcode
-export const reqMessageCaptcha=(phone)=>ajax(`/api/sendcode`,{phone});
+export const reqSendCode=(phone)=>ajax(`/api/sendcode`,{phone});
 
 
 // [8、手机号验证码登陆](#8手机号验证码登陆)<br/>...............................
 //	http://localhost:3000/login_sms POST  phone  code
-export const reqPhoneLogin=({phone,code})=>ajax(`/api/login_sms`,{phone,code},'POST');
+export const reqSmsLogin=({phone,code})=>ajax(`/api/login_sms`,{phone,code},'POST');
 
 // [9、根据会话获取用户信息](#9根据会话获取用户信息)<br/>
 //	http://localhost:3000/userinfo
@@ -48,4 +48,10 @@ export const reqUser=()=>ajax(`/api/userinfo`);
 // [10、用户登出](#10用户登出)<br/>
 //	http://localhost:3000/logout
 export const reqLogout=()=>ajax(`/api/logout`);
+
+//mock模拟
+export const reqShopGoods=()=>ajax('/goods');
+export const reqShopRatings=()=>ajax('/ratings');
+export const reqShopInfo=()=>ajax('/info');
+
 

@@ -1,11 +1,16 @@
 /*
 vuex的actions模块
  */
-import {reqAddress, reqFoodTypes, reqShops,reqUserInfo} from '../api'   //引入接口请求函数
+import {reqAddress, reqFoodTypes, reqShops,reqUserInfo,reqLogout,
+reqShopGoods,reqShopRatings,reqShopInfo} from '../api'   //引入接口请求函数
 import {RECEIVE_ADDRESS,
   RECEIVE_CATEGORYS,
   RECEIVE_SHOPS,
-  RECEIVE_USER_INFO
+  RECEIVE_USER,
+  RESET_USER,
+  RECEIVE_GOODS,
+  RECEIVE_RATINGS,
+  RECEIVE_INFO
 } from './mutation-types'
 import {reqUser} from "../api/index";
 
@@ -45,15 +50,52 @@ export default {
     }
   },
 
-  //记录用户信息
-  recordUserInfo({commit},userInfo){
-    commit(RECEIVE_USER_INFO,{userInfo})
+  //同步记录用户信息
+  saveUser({commit},user){
+    commit(RECEIVE_USER,{user})
   },
-  //异步获取用户信息
-  async getUserInfo({commit}){
+  //异步获取当前用户信息
+  async getUser({commit}){
     const result=await reqUser();
     if(result.code===0){
-      commit(RECEIVE_USER_INFO,{userInfo:result.data})
+      const user=result.data;
+      commit(RECEIVE_USER,{user})
     }
-  }
+  },
+  //异步请求退出登录
+  async logout({commit}){
+    const result =await reqLogout();
+    if(result.code===0){
+      commit(RESET_USER);
+    }
+  },
+
+  /*MOCK数据*/
+  //异步获取商品列表,cb回调函数
+  async getShopGoods ({commit},cb){
+    const result=await reqShopGoods();
+    if(result.code===0){
+      const goods=result.data;
+      commit(RECEIVE_GOODS,{goods});
+      cb && cb();//在状态改变后，调用回调（自定义回调）
+    }
+  },
+  //异步获取商家评价
+  async getShopRatings({commit}){
+    const result=await reqShopRatings();
+    if(result.code===0){
+      const ratings=result.data;
+      commit(RECEIVE_RATINGS,{ratings});
+    }
+  },
+  //异步获取商家信息
+  async getShopInfo({commit}){
+    const result=await reqShopInfo();
+    if(result.code===0){
+      const info=result.data;
+      commit(RECEIVE_INFO,{info});
+    }
+  },
+
+  //
 }

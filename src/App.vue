@@ -13,7 +13,7 @@ export default {
     //异步获取address
     this.$store.dispatch('getAddress');
     //异步获取扥估用户信息
-    this.$store.dispatch('getUserInfo')
+    this.$store.dispatch('getUser')
   },
   components:{
     FooterGuide
