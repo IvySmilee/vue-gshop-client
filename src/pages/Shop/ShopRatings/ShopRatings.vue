@@ -45,7 +45,7 @@
                 <span class="iconfont" :class="rating.rateType===0? 'icon-thumb_up' : 'icon-thumb_down'"></span>
                 <span class="item" v-for="(item,index) in rating.recommend" :key="index">{{item}}</span>
               </div>
-              <div class="time">{{rating.rateTime}}</div>
+              <div class="time">{{rating.rateTime | date-format}}</div>
             </div>
           </li>
         </ul>
@@ -129,11 +129,12 @@
   
   .ratings
     position: absolute
-    top: 255px
+    top: 270px
     bottom: 0
     left: 0
     width: 100%
     overflow: hidden
+    background-color #ffffff
     .overview
       display: flex
       padding: 18px 0

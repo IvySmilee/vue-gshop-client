@@ -3,7 +3,7 @@
     <nav class="shop-nav"
          :style="{backgroundImage: `url(${info.bgImg})`}">
       <!--info.bgImg是空，不显示，一层取值但是不会报错-->
-      <a class="back">
+      <a class="back" @click="$router.back()">
         <i class="iconfont icon-arrow_left"/>
       </a>
     </nav>
