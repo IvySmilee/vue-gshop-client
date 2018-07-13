@@ -10,7 +10,10 @@ import {RECEIVE_ADDRESS,
   RESET_USER,
   RECEIVE_GOODS,
   RECEIVE_RATINGS,
-  RECEIVE_INFO
+  RECEIVE_INFO,
+  INCREMENT_FOOD_COUNT,
+  DECREMENT_FOOD_COUNT,
+  CLEAR_CART
 } from './mutation-types'
 import {reqUser} from "../api/index";
 
@@ -81,11 +84,12 @@ export default {
     }
   },
   //异步获取商家评价
-  async getShopRatings({commit}){
+  async getShopRatings({commit},cb){
     const result=await reqShopRatings();
     if(result.code===0){
       const ratings=result.data;
       commit(RECEIVE_RATINGS,{ratings});
+      cb && cb();
     }
   },
   //异步获取商家信息
@@ -97,5 +101,16 @@ export default {
     }
   },
 
-  //
+  //同步更新指定food数量
+  updateFoodCount({commit},{food,isAdd}){
+    if(isAdd){
+      commit(INCREMENT_FOOD_COUNT,{food})
+    }else{
+      commit(DECREMENT_FOOD_COUNT,{food})
+    }
+  },
+  //同步清空购物车的action
+  clearCart({commit}){
+    commit(CLEAR_CART)
+  }
 }

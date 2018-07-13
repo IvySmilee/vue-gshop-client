@@ -6,8 +6,10 @@
           <!--current-->
           <li class="menu-item" v-for="(good,index) in goods" :key="index"
             :class="{current:index===currentIndex}" @click="clickItem(index)">
-            <img class="icon" v-if="good.icon" :src="good.icon">
-            <span class="text bottom-border-1px">{{good.name}}</span>
+            <span class="text bottom-border-1px">
+              <img class="icon" v-if="good.icon" :src="good.icon">
+              {{good.name}}
+            </span>
           </li>
           <!--<li class="menu-item">
             <span class="text bottom-border-1px">
@@ -23,7 +25,7 @@
             <h1 class="title">{{good.name}}</h1>
             <ul>
               <li class="food-item bottom-border-1px" v-for="(food,index) in good.foods"
-              :key="index">
+              :key="index" @click="showFood(food)">
                 <div class="icon">
                   <img width="57" height="57" :src="food.icon">
                 </div>
@@ -46,20 +48,25 @@
           </li>
         </ul>
       </div>
+      <ShopCart/>
     </div>
+    <Food :food="food" ref="food"/><!--显示隐藏，这没有，子组件里面就要有-->
   </div>
 </template>
 
 <script>
   import {mapState} from'vuex'
   import BScroll from 'better-scroll'
-  import CartControl from './CartControl/CartControl.vue'
-  
+  import CartControl from '../../../components/CartControl/CartControl.vue'
+  import ShopCart from '../../../components/ShopCart/ShopCart.vue'
+  import Food from '../../../components/Food/Food.vue'
+
   export default {
     data (){
       return {
         scrollY:0, //滚动的y轴坐标
         tops:[], //所有li的top组成的数组
+        food:{}, //当前选择的food，初始为空对象
       }
     },
     mounted(){
@@ -73,6 +80,20 @@
         });
       });
     },
+    computed:{
+      ...mapState(['goods']),
+    
+      //滑动时对应的左侧分类的index
+      currentIndex(){
+        const {scrollY,tops}=this;
+        //arr.findIndex();
+        return tops.findIndex((top,index)=>{
+          // 0, 3, 7, 10, 16
+          // 8   [top, nextTop)
+          return scrollY>=top && scrollY<tops[index+1];
+        })
+      }
+    },
     methods:{
       _initScroll(){
         // 左侧分类列表的BScroll
@@ -82,6 +103,7 @@
         // 右侧food列表的BScroll
         this.foodsScroll=new BScroll('.foods-wrapper',{
           probeType:2, //因为惯性滑动不会触发
+          click:true
         });
         //给右侧滚动对象绑定滚动的监听
         // better-scroll库禁止所有js事件，并且不会自动派发事件，需要自己配置probeType来派发事件
@@ -115,24 +137,19 @@
         this.scrollY=-y;
         //平滑滚动到对应的位置
         this.foodsScroll.scrollTo(0,y,500);
+      },
+      showFood(food){
+        //更新food数据
+        this.food=food;
+        //显示food组件界面(父组件调用子组件对象food的方法)
+        this.$refs.food.toggleShow();
       }
     },
-    computed:{
-      ...mapState(['goods']),
-  
-      //滑动时对应的左侧分类的index
-      currentIndex(){
-        const {scrollY,tops}=this;
-        //arr.findIndex();
-        return tops.findIndex((top,index)=>{
-          // 0, 3, 7, 10, 16
-          // 8   [top, nextTop)
-          return scrollY>=top && scrollY<tops[index+1];
-        })
-      }
-    },
+    
     components:{
-      CartControl
+      CartControl,
+      ShopCart,
+      Food
     }
   }
 </script>

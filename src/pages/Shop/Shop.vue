@@ -22,7 +22,6 @@
   
   export default {
     mounted (){
-      this.$store.dispatch('getShopRatings');
       this.$store.dispatch('getShopInfo');
     },
     components:{

@@ -1,9 +1,14 @@
 <template>
   <div class="cartcontrol">
-    <div class="iconfont icon-remove_circle_outline"
-      v-show="food.count"></div>
+    <transition name="move"><!--v-show:添加display属性，v-if：是删除标签-->
+      <div class="iconfont icon-remove_circle_outline"
+           v-show="food.count" @click.stop="updateFoodCount(false)"></div>
+    </transition>
+    
     <div class="cart-count" v-if="food.count">{{food.count}}</div>
-    <div class="iconfont icon-add_circle" v-show="food.count"></div>
+    <div class="iconfont icon-add_circle"
+         @click.stop="updateFoodCount(true)"></div>
+    <!--.stop：阻止冒泡：防止点击加减时出现food大图详情-->
   </div>
 
 </template>
@@ -16,8 +21,8 @@
     methods:{
       //更新food的count
       updateFoodCount (isAdd){
-        const food=this;
-        thid.$store.dispatch('updateFoodCount',{food,isAdd})
+        const food=this.food;
+        this.$store.dispatch('updateFoodCount',{food,isAdd})
       }
     }
   }
@@ -25,7 +30,7 @@
 
 <!--scoped：限定范围，只在当前组件中应用样式-->
 <style lang="stylus" rel="stylesheet/stylus" scoped>
-  @import "../../../../common/stylus/mixins.styl"
+  @import "../../common/stylus/mixins.styl"
   .cartcontrol
     font-size: 0
     .cart-decrease
@@ -41,6 +46,11 @@
       line-height 24px
       font-size 24px
       color $green
+      &.move-enter-active,&.move-leave-active
+        transition all 0.5s
+      &.move-enter,&.move-leave-to
+        opacity 0
+        transform translateX(20px) rotate(180deg)
     .cart-count
       display: inline-block
       vertical-align: top

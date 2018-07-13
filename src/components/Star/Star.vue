@@ -18,7 +18,6 @@
         const arr=[];
         const {score}=this;
         const scoreInteger=Math.floor(score);
-        console.log(scoreInteger)
         //保存n个CLASS_ON
         for (var i = 0; i < scoreInteger; i++) {
           arr.push(CLASS_ON);

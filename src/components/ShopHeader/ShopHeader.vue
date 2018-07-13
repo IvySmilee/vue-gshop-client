@@ -7,6 +7,7 @@
         <i class="iconfont icon-arrow_left"/>
       </a>
     </nav>
+    
     <div class="shop-content" @click="isShowDetail=true">
       <img :src="info.avatar" class="content-image">
       <div class="header-content">
@@ -29,8 +30,9 @@
         <p class="shop-notice">{{info.bulletin}}</p>
       </div>
     </div>
-    <div class="shop-header-discounts" @click="isShowSupport=true">
-      <div class="discounts-left" v-if="info.supports">
+    
+    <div class="shop-header-discounts" v-if="info.supports" @click="isShowSupport=true">
+      <div class="discounts-left">
         <!--v-if监控，info.supports有值才显示，解决三层表达式出错的问题-->
         <!--info.supports是异步获取的，界面展示在得到数据之前，二层取值报错0是undefined-->
         <div class="activity" :class="supportClasses[info.supports[0].type]">
@@ -88,8 +90,7 @@
         <div class="brief-modal-cover" @click="isShowDetail=false"></div>
       </div>
     </transition>
-    
-    <div class="activity-sheet" v-if="isShowSupport">
+     <div class="activity-sheet" v-if="isShowSupport">
       <div class="activity-sheet-content">
         <h2 class="activity-sheet-title">
           优惠活动</h2>
@@ -106,7 +107,7 @@
           <span class="iconfont icon-close"></span>
         </div>
       </div>
-      <div class="activity-sheet-cover"></div>
+      <div class="activity-sheet-cover"  @click="isShowSupport=false"></div>
     </div>
   </div>
 

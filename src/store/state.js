@@ -9,4 +9,5 @@ export default {
   goods:[], //商品列表数组
   ratings:[], //商家评价数组
   info:{}, //商家信息
+  cartFoods:[], //购物项food列表
 }
